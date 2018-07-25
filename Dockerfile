@@ -133,7 +133,6 @@ RUN apt-get update
 RUN apt-get install docker-ce -y -q --no-install-recommends
 
 # Allow jovyan to use Docker:
-RUN groupadd docker
 RUN usermod -aG docker jovyan
 
 USER jovyan
