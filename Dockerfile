@@ -131,7 +131,6 @@ RUN add-apt-repository \
    stable"
 RUN apt-get update
 RUN apt-get install docker-ce -y -q --no-install-recommends
-RUN docker run hello-world
 
 # Allow jovyan to use Docker:
 RUN groupadd docker
