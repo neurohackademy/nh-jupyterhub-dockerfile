@@ -1,6 +1,72 @@
 FROM jupyter/datascience-notebook:8d22c86ed4d7
 
 
+# Neurodebian:
+
+USER root
+# https://bugs.debian.org/830696 (apt uses gpgv by default in newer releases, rather than gpg)
+RUN set -x \
+	&& apt-get update \
+	&& { \
+		which gpg \
+		|| apt-get install -y --no-install-recommends gnupg \
+	; } \
+# Ubuntu includes "gnupg" (not "gnupg2", but still 2.x), but not dirmngr, and gnupg 2.x requires dirmngr
+# so, if we're not running gnupg 1.x, explicitly install dirmngr too
+	&& { \
+		gpg --version | grep -q '^gpg (GnuPG) 1\.' \
+		|| apt-get install -y --no-install-recommends dirmngr \
+	; } \
+	&& rm -rf /var/lib/apt/lists/*
+
+# apt-key is a bit finicky during "docker build" with gnupg 2.x, so install the repo key the same way debian-archive-keyring does (/etc/apt/trusted.gpg.d)
+# this makes "apt-key list" output prettier too!
+RUN set -x \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys DD95CC430502E37EF840ACEEA5D32F012649A5A9 \
+	&& gpg --export DD95CC430502E37EF840ACEEA5D32F012649A5A9 > /etc/apt/trusted.gpg.d/neurodebian.gpg \
+	&& rm -rf "$GNUPGHOME" \
+	&& apt-key list | grep neurodebian
+
+RUN { \
+	echo 'deb http://neuro.debian.net/debian stretch main'; \
+	echo 'deb http://neuro.debian.net/debian data main'; \
+	echo '#deb-src http://neuro.debian.net/debian-devel stretch main'; \
+} > /etc/apt/sources.list.d/neurodebian.sources.list
+
+RUN sed -i -e 's,main *$,main contrib non-free,g' /etc/apt/sources.list.d/neurodebian.sources.list /etc/apt/sources.list
+
+# Neurodocker:
+
+ARG DEBIAN_FRONTEND="noninteractive"
+
+ENV LANG="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
+    ND_ENTRYPOINT="/neurodocker/startup.sh"
+RUN export ND_ENTRYPOINT="/neurodocker/startup.sh" \
+    && apt-get update -qq \
+    && apt-get install -y -q --no-install-recommends \
+           apt-utils \
+           bzip2 \
+           ca-certificates \
+           curl \
+           locales \
+           unzip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && dpkg-reconfigure --frontend=noninteractive locales \
+    && update-locale LANG="en_US.UTF-8" \
+    && chmod 777 /opt && chmod a+s /opt \
+    && mkdir -p /neurodocker \
+    && if [ ! -f "$ND_ENTRYPOINT" ]; then \
+         echo '#!/usr/bin/env bash' >> "$ND_ENTRYPOINT" \
+    &&   echo 'set -e' >> "$ND_ENTRYPOINT" \
+    &&   echo 'if [ -n "$1" ]; then "$@"; else /usr/bin/env bash; fi' >> "$ND_ENTRYPOINT"; \
+    fi \
+    && chmod -R 777 /neurodocker && chmod a+s /neurodocker
+
+ENTRYPOINT ["/neurodocker/startup.sh"]
 
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
@@ -23,6 +89,7 @@ RUN apt-get update -qq \
            netbase \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
@@ -52,82 +119,16 @@ RUN apt-get update -qq \
     && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
-RUN useradd --no-user-group --create-home --shell /bin/bash neuro
-USER neuro
+USER jovyan
 
-ENV CONDA_DIR="/opt/miniconda-latest" \
-    PATH="/opt/miniconda-latest/bin:$PATH"
-RUN export PATH="/opt/miniconda-latest/bin:$PATH" \
-    && echo "Downloading Miniconda installer ..." \
-    && conda_installer="/tmp/miniconda.sh" \
-    && curl -fsSL --retry 5 -o "$conda_installer" https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash "$conda_installer" -b -p /opt/miniconda-latest \
-    && rm -f "$conda_installer" \
-    && conda update -yq -nbase conda \
-    && conda config --system --prepend channels conda-forge \
-    && conda config --system --set auto_update_conda false \
-    && conda config --system --set show_channel_urls true \
-    && sync && conda clean -tipsy && sync \
-    && conda create -y -q --name neuro \
-    && conda install -y -q --name neuro \
-           python=3.6 \
-           pytest \
-           jupyter \
-           jupyterlab \
-           jupyter_contrib_nbextensions \
-           traits \
-           pandas \
-           matplotlib \
-           scikit-learn \
-           scikit-image \
-           seaborn \
-           nbformat \
-           nb_conda \
-    && sync && conda clean -tipsy && sync \
-    && bash -c "source activate neuro \
-    &&   pip install  --no-cache-dir \
+RUN  pip install  --no-cache-dir \
              https://github.com/nipy/nipype/tarball/master \
              https://github.com/INCF/pybids/tarball/master \
              nilearn \
              datalad[full] \
              nipy \
              duecredit \
-             nbval" \
-    && rm -rf ~/.cache/pip/* \
-    && sync \
-    && sed -i '$isource activate neuro' $ND_ENTRYPOINT
-
-RUN bash -c 'source activate neuro && jupyter nbextension enable exercise2/main && jupyter nbextension enable spellchecker/main'
-
-USER root
-
-RUN mkdir /data && chmod 777 /data && chmod a+s /data
-
-RUN mkdir /output && chmod 777 /output && chmod a+s /output
-
-USER neuro
-
-RUN bash -c 'source activate neuro \
-        && cd /data \
-        && datalad install -r ///workshops/nih-2017/ds000114 \
-        && cd ds000114 \
-        && datalad update -r \
-        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*'
-
-RUN curl -L https://files.osf.io/v1/resources/fvuh8/providers/osfstorage/580705089ad5a101f17944a9 -o /data/ds000114/derivatives/fmriprep/mni_icbm152_nlin_asym_09c.tar.gz \
-        && tar xf /data/ds000114/derivatives/fmriprep/mni_icbm152_nlin_asym_09c.tar.gz -C /data/ds000114/derivatives/fmriprep/. \
-        && rm /data/ds000114/derivatives/fmriprep/mni_icbm152_nlin_asym_09c.tar.gz \
-        && find /data/ds000114/derivatives/fmriprep/mni_icbm152_nlin_asym_09c -type f -not -name ?mm_T1.nii.gz -not -name ?mm_brainmask.nii.gz -not -name ?mm_tpm*.nii.gz -delete
-
-COPY [".", "/home/neuro/nipype_tutorial"]
-
-USER root
-
-RUN chown -R neuro /home/neuro/nipype_tutorial
-
-RUN rm -rf /opt/conda/pkgs/*
-
-USER neuro
+             nbval \
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 
