@@ -127,7 +127,7 @@ RUN  pip install  --no-cache-dir \
              datalad[full] \
              nipy \
              duecredit \
-             nbval \
+             nbval
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 
