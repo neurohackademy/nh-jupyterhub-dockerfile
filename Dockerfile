@@ -1,6 +1,5 @@
 FROM jupyter/datascience-notebook:8d22c86ed4d7
 
-
 # Neurodebian:
 
 USER root
@@ -89,7 +88,6 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
 ENV FORCE_SPMMCR="1" \
@@ -118,7 +116,18 @@ RUN apt-get update -qq \
     && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+RUN apt-get update
+RUN apt-cache policy docker-ce
+RUN apt-get install -y docker-ce
+RUN systemctl status docker
+RUN groupadd docker
+RUN usermod -aG docker jovyan
+
 USER jovyan
+RUN docker run hello-world
 
 RUN  pip install  --no-cache-dir \
              https://github.com/nipy/nipype/tarball/master \
@@ -127,7 +136,11 @@ RUN  pip install  --no-cache-dir \
              datalad[full] \
              nipy \
              duecredit \
-             nbval
+             nbval \
+             dipy \
+             tensorflow \
+             keras \
+             cloudknot
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 
