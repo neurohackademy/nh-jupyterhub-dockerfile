@@ -117,8 +117,6 @@ RUN apt-get update -qq \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
 # Install docker:
-RUN apt-get remove docker docker-engine docker.io
-RUN apt-get update
 RUN apt-get install \
     apt-transport-https \
     ca-certificates \
