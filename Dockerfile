@@ -117,11 +117,11 @@ RUN apt-get update -qq \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
 # Install docker:
-RUN apt-get install \
+RUN apt-get update && apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
-    python-software-properties
+    software-properties-common
 
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 RUN apt-key fingerprint 0EBFCD88
