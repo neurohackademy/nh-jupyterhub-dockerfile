@@ -70,7 +70,6 @@ ENTRYPOINT ["/neurodocker/startup.sh"]
 
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
-           convert3d \
            ants \
            fsl \
            gcc \
