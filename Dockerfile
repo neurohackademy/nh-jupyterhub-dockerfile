@@ -159,3 +159,4 @@ RUN jupyter labextension install @jupyterlab/hub-extension
 RUN jupyter labextension install ipyvolume
 RUN jupyter labextension install jupyter-threejs
 RUN jupyter contrib nbextension install --user
+RUN jupyter nbextension enable exercise2/main
