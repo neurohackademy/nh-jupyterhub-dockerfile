@@ -116,6 +116,8 @@ RUN apt-get update -qq \
     && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
+RUN mkdir /data && chmod 755 /data
+
 USER jovyan
 
 RUN  pip install  --no-cache-dir \
@@ -137,7 +139,7 @@ RUN conda install \
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 
-RUN mkdir /data && cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
+RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
         && datalad update -r \
         && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
