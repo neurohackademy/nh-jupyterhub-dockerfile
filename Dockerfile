@@ -138,7 +138,7 @@ RUN  pip install  --no-cache-dir \
              line_profiler
 
 RUN conda install \
-    python-graphviz \
+    python-graphviz
 
 RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
