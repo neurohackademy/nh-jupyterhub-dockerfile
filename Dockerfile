@@ -149,3 +149,5 @@ RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
 
 
 RUN jupyter labextension install @jupyterlab/hub-extension
+RUN jupyter nbextension enable rubberband/main && jupyter nbextension enable exercise2/main && jupyter nbextension enable spellchecker/main
+RUN pip install git+https://github.com/data-8/gitautosync && jupyter serverextension enable --py nbgitautosync --sys-prefix
