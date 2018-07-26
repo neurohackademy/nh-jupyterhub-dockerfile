@@ -138,9 +138,11 @@ RUN  pip install  --no-cache-dir \
              keras \
              cloudknot \
              nbgitpuller
+             psutil\
+             memory_profiler \
+             line_profiler
 
 RUN conda install \
     python-graphviz \
-    line_profiler
 
 RUN jupyter labextension install @jupyterlab/hub-extension
