@@ -137,7 +137,7 @@ RUN conda install \
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 
-RUN mkdir data && cd data && datalad install -r ///workshops/nih-2017/ds000114 \
+RUN mkdir /data && cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
         && datalad update -r \
         && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
