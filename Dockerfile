@@ -120,11 +120,6 @@ RUN mkdir /data && chown jovyan /data && chmod 777 /data && mkdir /output && cho
 
 USER jovyan
 
-RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
-        && cd ds000114 \
-        && datalad update -r \
-        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
-
 RUN  pip install  --no-cache-dir \
              https://github.com/nipy/nipype/tarball/master \
              https://github.com/INCF/pybids/tarball/master \
@@ -144,5 +139,11 @@ RUN  pip install  --no-cache-dir \
 
 RUN conda install \
     python-graphviz \
+
+RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
+        && cd ds000114 \
+        && datalad update -r \
+        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
+
 
 RUN jupyter labextension install @jupyterlab/hub-extension
