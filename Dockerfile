@@ -135,4 +135,9 @@ RUN  pip install  --no-cache-dir \
 RUN conda install \
     python-graphviz
 
+RUN datalad install -r ///workshops/nih-2017/ds000114 \
+        && cd ds000114 \
+        && datalad update -r \
+        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
+
 RUN jupyter labextension install @jupyterlab/hub-extension
