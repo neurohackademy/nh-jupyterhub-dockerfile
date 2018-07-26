@@ -124,6 +124,7 @@ RUN  pip install  --no-cache-dir \
              https://github.com/nipy/nipype/tarball/master \
              https://github.com/INCF/pybids/tarball/master \
              https://github.com/maartenbreddels/ipyvolume/tarball/master \
+             https://github.com/ipython-contrib/jupyter_contrib_nbextensions/tarball/master \
              nilearn \
              datalad[full] \
              nipy \
@@ -141,8 +142,12 @@ RUN  pip install  --no-cache-dir \
              neurosynth\
              ipywidgets\
              pythreejs
+
+
 RUN conda install \
     python-graphviz
+
+RUN conda install -c conda-forge altair vega_datasets
 
 RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
@@ -151,8 +156,6 @@ RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
 
 
 RUN jupyter labextension install @jupyterlab/hub-extension
-RUN jupyter nbextension install ipyvolume && jupyter nbextension enable ipyvolume
-RUN jupyter nbextension install rubberband/main && jupyter nbextension enable rubberband/main
-RUN jupyter nbextension install exercise2/main && jupyter nbextension enable exercise2/main
-RUN jupyter nbextension install spellchecker/main && jupyter nbextension enable spellchecker/main
-RUN jupyter serverextension install nbgitpuller && jupyter serverextension enable nbgitpuller
+RUN jupyter labextension install ipyvolume
+RUN jupyter labextension install jupyter-threejs
+RUN jupyter contrib nbextension install --user
