@@ -135,7 +135,9 @@ RUN  pip install  --no-cache-dir \
              nbgitpuller \
              psutil\
              memory_profiler \
-             line_profiler
+             line_profiler \
+             pybids \
+             neurosynth
 
 RUN conda install \
     python-graphviz
