@@ -116,6 +116,10 @@ RUN apt-get update -qq \
     && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
+RUN apt-get update -qq \
+    && apt-get install -y -q --no-install-recommends \
+    libgraphviz-dev
+
 USER jovyan
 
 RUN  pip install  --no-cache-dir \
