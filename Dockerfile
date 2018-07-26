@@ -137,7 +137,7 @@ RUN  pip install  --no-cache-dir \
              tensorflow \
              keras \
              cloudknot \
-             nbgitpuller
+             nbgitpuller \
              psutil\
              memory_profiler \
              line_profiler
