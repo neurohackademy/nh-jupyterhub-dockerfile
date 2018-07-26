@@ -152,7 +152,7 @@ RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
 
 RUN jupyter labextension install @jupyterlab/hub-extension
 RUN jupyter nbextension install ipyvolume && jupyter nbextension enable ipyvolume
-RUN jupyter nbextension install rubberband/main && nbextension enable rubberband/main
-RUN jupyter nbextension install exercise2/main && nbextension enable exercise2/main
-RUN jupyter nbextension install spellchecker/main && nbextension enable spellchecker/main
-RUN jupyter serverextension enable --py nbgitpuller --sys-prefix
+RUN jupyter nbextension install rubberband/main && jupyter nbextension enable rubberband/main
+RUN jupyter nbextension install exercise2/main && jupyter nbextension enable exercise2/main
+RUN jupyter nbextension install spellchecker/main && jupyter nbextension enable spellchecker/main
+RUN jupyter serverextension install nbgitpuller && jupyter serverextension enable nbgitpuller
