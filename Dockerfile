@@ -138,7 +138,7 @@ RUN  pip install  --no-cache-dir \
              memory_profiler \
              line_profiler \
              pybids \
-             neurosynth
+             neurosynth\
              ipywidgets\
              pythreejs
 RUN conda install \
