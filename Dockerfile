@@ -116,7 +116,7 @@ RUN apt-get update -qq \
     && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
     && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
 
-RUN mkdir /data && chmod 666 /data
+RUN mkdir /data && chown jovyan /data && chmod 777 /data && mkdir /output && chown jovyan /output && chmod 777 /output && mkdir /repos && chown jovyan /repos && chmod 777 /repos
 
 USER jovyan
 
