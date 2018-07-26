@@ -148,6 +148,12 @@ RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
 
 
+RUN pip install --pre --upgrade ipywidgets pythreejs \
+RUN pip install  --upgrade https://github.com/maartenbreddels/ipyvolume/archive/master.zip && jupyter nbextension install --py --sys-prefix ipyvolume && jupyter nbextension enable --py --sys-prefix ipyvolume
+
+
 RUN jupyter labextension install @jupyterlab/hub-extension
-RUN jupyter nbextension enable rubberband/main && jupyter nbextension enable exercise2/main && jupyter nbextension enable spellchecker/main
-RUN pip install git+https://github.com/data-8/gitautosync && jupyter serverextension enable --py nbgitautosync --sys-prefix
+RUN jupyter nbextension install rubberband/main && nbextension enable rubberband/main
+RUN jupyter nbextension install exercise2/main && nbextension enable exercise2/main
+RUN jupyter nbextension install spellchecker/main && nbextension enable spellchecker/main
+RUN jupyter serverextension enable --py nbgitpuller --sys-prefix
