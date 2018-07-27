@@ -141,7 +141,8 @@ RUN  pip install  --no-cache-dir \
              pybids \
              neurosynth\
              ipywidgets\
-             pythreejs
+             pythreejs\
+             jupyter_nbextensions_configurator
 
 
 RUN conda install \
@@ -152,7 +153,7 @@ RUN conda install -c conda-forge altair vega_datasets
 RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
         && datalad update -r \
-        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/*fingerfootlips*
+        && datalad get -r sub-01/ses-test/anat sub-01/ses-test/func/
 
 
 RUN jupyter labextension install @jupyterlab/hub-extension
@@ -160,3 +161,4 @@ RUN jupyter labextension install ipyvolume
 RUN jupyter labextension install jupyter-threejs
 RUN jupyter contrib nbextension install --user
 RUN jupyter nbextension enable exercise2/main
+RUN jupyter nbextensions_configurator enable --user
