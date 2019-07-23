@@ -60,7 +60,7 @@ RUN export ND_ENTRYPOINT="/neurodocker/startup.sh" \
            locales \
            unzip \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/* \
     && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
     && dpkg-reconfigure --frontend=noninteractive locales \
     && update-locale LANG="en_US.UTF-8" \
@@ -69,6 +69,7 @@ RUN export ND_ENTRYPOINT="/neurodocker/startup.sh" \
     && if [ ! -f "$ND_ENTRYPOINT" ]; then \
          echo '#!/usr/bin/env bash' >> "$ND_ENTRYPOINT" \
     &&   echo 'set -e' >> "$ND_ENTRYPOINT" \
+    &&   echo 'export USER="${USER:=`whoami`}"' >> "$ND_ENTRYPOINT" \
     &&   echo 'if [ -n "$1" ]; then "$@"; else /usr/bin/env bash; fi' >> "$ND_ENTRYPOINT"; \
     fi \
     && chmod -R 777 /neurodocker && chmod a+s /neurodocker
@@ -77,6 +78,7 @@ ENTRYPOINT ["/neurodocker/startup.sh"]
 
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
+           convert3d \
            ants \
            fsl \
            gcc \
@@ -94,7 +96,7 @@ RUN apt-get update -qq \
            octave \
            netbase \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
