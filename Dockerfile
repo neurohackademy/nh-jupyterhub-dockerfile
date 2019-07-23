@@ -22,18 +22,26 @@ RUN set -x \
 # this makes "apt-key list" output prettier too!
 RUN set -x \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys DD95CC430502E37EF840ACEEA5D32F012649A5A9 \
-	&& gpg --export DD95CC430502E37EF840ACEEA5D32F012649A5A9 > /etc/apt/trusted.gpg.d/neurodebian.gpg \
+	&& gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys DD95CC430502E37EF840ACEEA5D32F012649A5A9 \
+	&& gpg --batch --export DD95CC430502E37EF840ACEEA5D32F012649A5A9 > /etc/apt/trusted.gpg.d/neurodebian.gpg \
 	&& rm -rf "$GNUPGHOME" \
 	&& apt-key list | grep neurodebian
 
 RUN { \
-	echo 'deb http://neuro.debian.net/debian stretch main'; \
+	echo 'deb http://neuro.debian.net/debian trusty main'; \
 	echo 'deb http://neuro.debian.net/debian data main'; \
-	echo '#deb-src http://neuro.debian.net/debian-devel stretch main'; \
+	echo '#deb-src http://neuro.debian.net/debian-devel trusty main'; \
 } > /etc/apt/sources.list.d/neurodebian.sources.list
 
-RUN sed -i -e 's,main *$,main contrib non-free,g' /etc/apt/sources.list.d/neurodebian.sources.list /etc/apt/sources.list
+# Minimalistic package to assist with freezing the APT configuration
+# which would be coming from neurodebian repo.
+# Also install and enable eatmydata to be used for all apt-get calls
+# to speed up docker builds.
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends neurodebian-freeze eatmydata \
+	&& ln -s /usr/bin/eatmydata /usr/local/bin/apt-get \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Neurodocker:
 
