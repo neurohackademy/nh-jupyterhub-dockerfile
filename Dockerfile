@@ -1,4 +1,4 @@
-FROM jupyter/datascience-notebook:8d22c86ed4d7
+FROM jupyter/datascience-notebook:7a3e968dd212
 
 # Neurodebian:
 
