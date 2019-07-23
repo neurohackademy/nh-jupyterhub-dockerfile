@@ -1,15 +1,14 @@
 #!/bin/sh
 
-set -e
-
 # Generate Dockerfile
 generate_docker() {
-  docker run --rm kaczmarj/neurodocker:master generate docker \
+  docker run --rm kaczmarj/neurodocker:0.5.0 generate docker \
   --base neurodebian:stretch-non-free \
   --pkg-manager apt \
-  --install convert3d ants fsl gcc g++ graphviz tree \
+  --install convert3d ants gcc g++ graphviz tree \
             git-annex-standalone vim emacs-nox nano less ncdu \
             tig git-annex-remote-rclone octave netbase \
+  --fsl version=5.0.10 method=binaries \
   --add-to-entrypoint "source /etc/fsl/fsl.sh" \
   --spm12 version=dev \
   --user=neuro \

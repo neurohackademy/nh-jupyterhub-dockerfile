@@ -80,7 +80,6 @@ RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
            convert3d \
            ants \
-           fsl \
            gcc \
            g++ \
            graphviz \
@@ -97,6 +96,40 @@ RUN apt-get update -qq \
            netbase \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+ENV FSLDIR="/opt/fsl-5.0.10" \
+    PATH="/opt/fsl-5.0.10/bin:$PATH"
+RUN apt-get update -qq \
+    && apt-get install -y -q --no-install-recommends \
+           bc \
+           dc \
+           file \
+           libfontconfig1 \
+           libfreetype6 \
+           libgl1-mesa-dev \
+           libglu1-mesa-dev \
+           libgomp1 \
+           libice6 \
+           libxcursor1 \
+           libxft2 \
+           libxinerama1 \
+           libxrandr2 \
+           libxrender1 \
+           libxt6 \
+           wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "Downloading FSL ..." \
+    && mkdir -p /opt/fsl-5.0.10 \
+    && curl -fsSL --retry 5 https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-5.0.10-centos6_64.tar.gz \
+    | tar -xz -C /opt/fsl-5.0.10 --strip-components 1 \
+    && sed -i '$iecho Some packages in this Docker container are non-free' $ND_ENTRYPOINT \
+    && sed -i '$iecho If you are considering commercial use of this container, please consult the relevant license:' $ND_ENTRYPOINT \
+    && sed -i '$iecho https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Licence' $ND_ENTRYPOINT \
+    && sed -i '$isource $FSLDIR/etc/fslconf/fsl.sh' $ND_ENTRYPOINT \
+    && echo "Installing FSL conda environment ..." \
+    && bash /opt/fsl-5.0.10/etc/fslconf/fslpython_install.sh -f /opt/fsl-5.0.10
+
 
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
