@@ -5,7 +5,7 @@ generate_docker() {
   docker run --rm kaczmarj/neurodocker:0.5.0 generate docker \
   --base neurodebian:stretch-non-free \
   --pkg-manager apt \
-  --install convert3d ants gcc g++ graphviz tree \
+  --install ants gcc g++ graphviz tree \
             git-annex-standalone vim emacs-nox nano less ncdu \
             tig git-annex-remote-rclone octave netbase \
   --fsl version=5.0.10 method=binaries \

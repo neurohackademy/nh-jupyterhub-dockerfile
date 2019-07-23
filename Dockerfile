@@ -78,7 +78,6 @@ ENTRYPOINT ["/neurodocker/startup.sh"]
 
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
-           convert3d \
            ants \
            gcc \
            g++ \
@@ -129,7 +128,6 @@ RUN apt-get update -qq \
     && sed -i '$isource $FSLDIR/etc/fslconf/fsl.sh' $ND_ENTRYPOINT \
     && echo "Installing FSL conda environment ..." \
     && bash /opt/fsl-5.0.10/etc/fslconf/fslpython_install.sh -f /opt/fsl-5.0.10
-
 
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
