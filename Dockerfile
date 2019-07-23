@@ -178,13 +178,13 @@ RUN  pip install  --no-cache-dir \
              nbgitpuller \
              psutil\
              memory_profiler \
-             line_profiler \
              pybids \
              neurosynth\
              ipywidgets\
              pythreejs\
              jupyter_nbextensions_configurator
 
+RUN git clone https://github.com/rkern/line_profiler.git && find line_profiler -name '*.pyx' -exec cython {} \; && cd line_profiler && pip install . --user && cd && rm -rf line_profiler
 
 RUN conda install \
     python-graphviz
