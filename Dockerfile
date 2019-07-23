@@ -180,7 +180,6 @@ RUN  pip install  --no-cache-dir \
              memory_profiler \
              pybids \
              neurosynth\
-             ipywidgets\
              pythreejs\
              jupyter_nbextensions_configurator
 
@@ -189,7 +188,7 @@ RUN git clone https://github.com/rkern/line_profiler.git && find line_profiler -
 RUN conda install \
     python-graphviz
 
-RUN conda install -c conda-forge altair vega_datasets
+RUN conda install -c conda-forge altair vega_datasets ipyvolume
 
 RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
