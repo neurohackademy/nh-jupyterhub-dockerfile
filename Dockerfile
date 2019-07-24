@@ -93,6 +93,7 @@ RUN apt-get update -qq \
            git-annex-remote-rclone \
            octave \
            netbase \
+           default-jre \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
