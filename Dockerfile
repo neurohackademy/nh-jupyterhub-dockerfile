@@ -132,30 +132,42 @@ RUN apt-get update -qq \
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
 ENV FORCE_SPMMCR="1" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/opt/matlabmcr-2018a/v94/runtime/glnxa64:/opt/matlabmcr-2018a/v94/bin/glnxa64:/opt/matlabmcr-2018a/v94/sys/os/glnxa64:/opt/matlabmcr-2018a/v94/extern/bin/glnxa64" \
-    MATLABCMD="/opt/matlabmcr-2018a/v94/toolbox/matlab"
-RUN apt-get update -qq \
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/opt/matlabmcr-2010a/v713/runtime/glnxa64:/opt/matlabmcr-2010a/v713/bin/glnxa64:/opt/matlabmcr-2010a/v713/sys/os/glnxa64:/opt/matlabmcr-2010a/v713/extern/bin/glnxa64" \
+    MATLABCMD="/opt/matlabmcr-2010a/v713/toolbox/matlab"
+RUN export TMPDIR="$(mktemp -d)" \
+    && apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
            bc \
+           libncurses5 \
            libxext6 \
+           libxmu6 \
            libxpm-dev \
            libxt6 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/* \
     && echo "Downloading MATLAB Compiler Runtime ..." \
-    && curl -fsSL --retry 5 -o /tmp/mcr.zip https://ssd.mathworks.com/supportfiles/downloads/R2018a/deployment_files/R2018a/installers/glnxa64/MCR_R2018a_glnxa64_installer.zip \
-    && unzip -q /tmp/mcr.zip -d /tmp/mcrtmp \
-    && /tmp/mcrtmp/install -destinationFolder /opt/matlabmcr-2018a -mode silent -agreeToLicense yes \
-    && rm -rf /tmp/* \
+    && curl -sSL --retry 5 -o /tmp/toinstall.deb http://mirrors.kernel.org/debian/pool/main/libx/libxp/libxp6_1.0.2-2_amd64.deb \
+    && dpkg -i /tmp/toinstall.deb \
+    && rm /tmp/toinstall.deb \
+    && apt-get install -f \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL --retry 5 -o "$TMPDIR/MCRInstaller.bin" https://dl.dropbox.com/s/zz6me0c3v4yq5fd/MCR_R2010a_glnxa64_installer.bin \
+    && chmod +x "$TMPDIR/MCRInstaller.bin" \
+    && "$TMPDIR/MCRInstaller.bin" -silent -P installLocation="/opt/matlabmcr-2010a" \
+    && rm -rf "$TMPDIR" \
+    && unset TMPDIR \
     && echo "Downloading standalone SPM ..." \
-    && curl -fsSL --retry 5 -o /tmp/spm12.zip https://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia/dev/spm12_r7487_Linux_R2018b.zip \
+    && curl -fsSL --retry 5 -o /tmp/spm12.zip http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia/previous/spm12_r7219_R2010a.zip \
     && unzip -q /tmp/spm12.zip -d /tmp \
-    && mkdir -p /opt/spm12-dev \
-    && mv /tmp/spm12/* /opt/spm12-dev/ \
-    && chmod -R 777 /opt/spm12-dev \
+    && mkdir -p /opt/spm12-r7219 \
+    && mv /tmp/spm12/* /opt/spm12-r7219/ \
+    && chmod -R 777 /opt/spm12-r7219 \
     && rm -rf /tmp/* \
-    && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
-    && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
+    && /opt/spm12-r7219/run_spm12.sh /opt/matlabmcr-2010a/v713 quit \
+    && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-r7219/run_spm12.sh /opt/matlabmcr-2010a/v713 script\"' $ND_ENTRYPOINT
+
+### End neurodocker
 
 RUN mkdir /data && chown jovyan /data && chmod 777 /data && mkdir /output && chown jovyan /output && chmod 777 /output && mkdir /repos && chown jovyan /repos && chmod 777 /repos
 

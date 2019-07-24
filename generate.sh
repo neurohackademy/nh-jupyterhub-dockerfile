@@ -10,7 +10,7 @@ generate_docker() {
             tig git-annex-remote-rclone octave netbase \
   --fsl version=5.0.10 method=binaries \
   --add-to-entrypoint "source /etc/fsl/fsl.sh" \
-  --spm12 version=dev \
+  --spm12 version=r7219 method=binaries\
   --user=neuro \
   --miniconda \
     conda_install="python=3.6 pytest jupyter jupyterlab jupyter_contrib_nbextensions
