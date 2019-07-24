@@ -132,30 +132,34 @@ RUN apt-get update -qq \
 RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
 
 ENV FORCE_SPMMCR="1" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/opt/matlabmcr-2018a/v94/runtime/glnxa64:/opt/matlabmcr-2018a/v94/bin/glnxa64:/opt/matlabmcr-2018a/v94/sys/os/glnxa64:/opt/matlabmcr-2018a/v94/extern/bin/glnxa64" \
-    MATLABCMD="/opt/matlabmcr-2018a/v94/toolbox/matlab"
-RUN apt-get update -qq \
+    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/opt/matlabmcr-2018b/v95/runtime/glnxa64:/opt/matlabmcr-2018b/v95/bin/glnxa64:/opt/matlabmcr-2018b/v95/sys/os/glnxa64:/opt/matlabmcr-2018b/v95/extern/bin/glnxa64" \
+    MATLABCMD="/opt/matlabmcr-2018b/v95/toolbox/matlab"
+RUN export TMPDIR="$(mktemp -d)" \
+    && apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
            bc \
+           libncurses5 \
            libxext6 \
+           libxmu6 \
            libxpm-dev \
            libxt6 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/* \
     && echo "Downloading MATLAB Compiler Runtime ..." \
-    && curl -fsSL --retry 5 -o /tmp/mcr.zip https://ssd.mathworks.com/supportfiles/downloads/R2018a/deployment_files/R2018a/installers/glnxa64/MCR_R2018a_glnxa64_installer.zip \
-    && unzip -q /tmp/mcr.zip -d /tmp/mcrtmp \
-    && /tmp/mcrtmp/install -destinationFolder /opt/matlabmcr-2018a -mode silent -agreeToLicense yes \
-    && rm -rf /tmp/* \
+    && curl -fsSL --retry 5 -o "$TMPDIR/mcr.zip" https://ssd.mathworks.com/supportfiles/downloads/R2018b/deployment_files/R2018b/installers/glnxa64/MCR_R2018b_glnxa64_installer.zip \
+    && unzip -q "$TMPDIR/mcr.zip" -d "$TMPDIR/mcrtmp" \
+    && "$TMPDIR/mcrtmp/install" -destinationFolder /opt/matlabmcr-2018b -mode silent -agreeToLicense yes \
+    && rm -rf "$TMPDIR" \
+    && unset TMPDIR \
     && echo "Downloading standalone SPM ..." \
-    && curl -fsSL --retry 5 -o /tmp/spm12.zip http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia/dev/spm12_latest_Linux_R2018a.zip \
+    && curl -fsSL --retry 5 -o /tmp/spm12.zip http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia/dev/spm12_latest_Linux_R2018b.zip \
     && unzip -q /tmp/spm12.zip -d /tmp \
     && mkdir -p /opt/spm12-dev \
     && mv /tmp/spm12/* /opt/spm12-dev/ \
     && chmod -R 777 /opt/spm12-dev \
     && rm -rf /tmp/* \
-    && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 quit \
-    && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018a/v94 script\"' $ND_ENTRYPOINT
+    && /opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018b/v95 quit \
+    && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-dev/run_spm12.sh /opt/matlabmcr-2018b/v95 script\"' $ND_ENTRYPOINT
 
 RUN mkdir /data && chown jovyan /data && chmod 777 /data && mkdir /output && chown jovyan /output && chmod 777 /output && mkdir /repos && chown jovyan /repos && chmod 777 /repos
 
