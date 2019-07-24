@@ -8,10 +8,8 @@ generate_docker() {
   --install ants gcc g++ graphviz tree \
             git-annex-standalone vim emacs-nox nano less ncdu \
             tig git-annex-remote-rclone octave netbase \
-  --fsl version=5.0.10 method=binaries \
-  --add-to-entrypoint "source /etc/fsl/fsl.sh" \
-  --spm12 version=r7219 method=binaries\
-  --user=neuro \
+  --freesurfer version=6.0.0-min \
+  --user=jovyan \
   --miniconda \
     conda_install="python=3.6 pytest jupyter jupyterlab jupyter_contrib_nbextensions
                    traits pandas matplotlib scikit-learn scikit-image seaborn nbformat nb_conda" \

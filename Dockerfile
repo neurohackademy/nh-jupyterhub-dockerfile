@@ -44,7 +44,6 @@ RUN set -x \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Neurodocker:
-
 ARG DEBIAN_FRONTEND="noninteractive"
 
 ENV LANG="en_US.UTF-8" \
@@ -93,81 +92,26 @@ RUN apt-get update -qq \
            git-annex-remote-rclone \
            octave \
            netbase \
-           default-jdk \
-           default-jre \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-ENV FSLDIR="/opt/fsl-5.0.10" \
-    PATH="/opt/fsl-5.0.10/bin:$PATH"
+ENV FREESURFER_HOME="/opt/freesurfer-6.0.0-min" \
+    PATH="/opt/freesurfer-6.0.0-min/bin:$PATH"
 RUN apt-get update -qq \
     && apt-get install -y -q --no-install-recommends \
            bc \
-           dc \
-           file \
-           libfontconfig1 \
-           libfreetype6 \
-           libgl1-mesa-dev \
-           libglu1-mesa-dev \
            libgomp1 \
-           libice6 \
-           libxcursor1 \
-           libxft2 \
-           libxinerama1 \
-           libxrandr2 \
-           libxrender1 \
-           libxt6 \
-           wget \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && echo "Downloading FSL ..." \
-    && mkdir -p /opt/fsl-5.0.10 \
-    && curl -fsSL --retry 5 https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-5.0.10-centos6_64.tar.gz \
-    | tar -xz -C /opt/fsl-5.0.10 --strip-components 1 \
-    && sed -i '$iecho Some packages in this Docker container are non-free' $ND_ENTRYPOINT \
-    && sed -i '$iecho If you are considering commercial use of this container, please consult the relevant license:' $ND_ENTRYPOINT \
-    && sed -i '$iecho https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Licence' $ND_ENTRYPOINT \
-    && sed -i '$isource $FSLDIR/etc/fslconf/fsl.sh' $ND_ENTRYPOINT \
-    && echo "Installing FSL conda environment ..." \
-    && bash /opt/fsl-5.0.10/etc/fslconf/fslpython_install.sh -f /opt/fsl-5.0.10
-
-RUN sed -i '$isource /etc/fsl/fsl.sh' $ND_ENTRYPOINT
-
-ENV FORCE_SPMMCR="1" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu:/opt/matlabmcr-2010a/v713/runtime/glnxa64:/opt/matlabmcr-2010a/v713/bin/glnxa64:/opt/matlabmcr-2010a/v713/sys/os/glnxa64:/opt/matlabmcr-2010a/v713/extern/bin/glnxa64" \
-    MATLABCMD="/opt/matlabmcr-2010a/v713/toolbox/matlab"
-RUN export TMPDIR="$(mktemp -d)" \
-    && apt-get update -qq \
-    && apt-get install -y -q --no-install-recommends \
-           bc \
-           libncurses5 \
-           libxext6 \
            libxmu6 \
-           libxpm-dev \
            libxt6 \
+           perl \
+           tcsh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && echo "Downloading MATLAB Compiler Runtime ..." \
-    && curl -sSL --retry 5 -o /tmp/toinstall.deb http://mirrors.kernel.org/debian/pool/main/libx/libxp/libxp6_1.0.2-2_amd64.deb \
-    && dpkg -i /tmp/toinstall.deb \
-    && rm /tmp/toinstall.deb \
-    && apt-get install -f \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL --retry 5 -o "$TMPDIR/MCRInstaller.bin" https://dl.dropbox.com/s/zz6me0c3v4yq5fd/MCR_R2010a_glnxa64_installer.bin \
-    && chmod +x "$TMPDIR/MCRInstaller.bin" \
-    && "$TMPDIR/MCRInstaller.bin" -silent -P installLocation="/opt/matlabmcr-2010a" \
-    && rm -rf "$TMPDIR" \
-    && unset TMPDIR \
-    && echo "Downloading standalone SPM ..." \
-    && curl -fsSL --retry 5 -o /tmp/spm12.zip http://www.fil.ion.ucl.ac.uk/spm/download/restricted/utopia/previous/spm12_r7219_R2010a.zip \
-    && unzip -q /tmp/spm12.zip -d /tmp \
-    && mkdir -p /opt/spm12-r7219 \
-    && mv /tmp/spm12/* /opt/spm12-r7219/ \
-    && chmod -R 777 /opt/spm12-r7219 \
-    && rm -rf /tmp/* \
-    && /opt/spm12-r7219/run_spm12.sh /opt/matlabmcr-2010a/v713 quit \
-    && sed -i '$iexport SPMMCRCMD=\"/opt/spm12-r7219/run_spm12.sh /opt/matlabmcr-2010a/v713 script\"' $ND_ENTRYPOINT
+    && echo "Downloading FreeSurfer ..." \
+    && mkdir -p /opt/freesurfer-6.0.0-min \
+    && curl -fsSL --retry 5 https://dl.dropbox.com/s/nnzcfttc41qvt31/recon-all-freesurfer6-3.min.tgz \
+    | tar -xz -C /opt/freesurfer-6.0.0-min --strip-components 1 \
+    && sed -i '$isource "/opt/freesurfer-6.0.0-min/SetUpFreeSurfer.sh"' "$ND_ENTRYPOINT"
 
 ### End neurodocker
 
