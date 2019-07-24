@@ -137,12 +137,13 @@ RUN  pip install  --no-cache-dir \
              memory_profiler \
              pybids \
              neurosynth\
-             pythreejs\
+             pythreejs \
              jupyter_nbextensions_configurator
 
+# This is for https://github.com/rkern/line_profiler/issues/132
 RUN git clone https://github.com/rkern/line_profiler.git && find line_profiler -name '*.pyx' -exec cython {} \; && cd line_profiler && pip install . --user && cd && rm -rf line_profiler
 
-RUN conda install \
+RUN conda update -n base conda && conda install \
     python-graphviz
 
 RUN conda install -c conda-forge altair vega_datasets ipyvolume
