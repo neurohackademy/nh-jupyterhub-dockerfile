@@ -126,6 +126,10 @@ RUN  pip install  --no-cache-dir \
              https://github.com/nipype/pydra/tarball/master \
              https://github.com/noahbenson/popeye/tarball/master \
              s3fs \
+             pytest \
+             cookiecutter \
+             flake8 \
+             black \
              neuropythy \
              ipyvolume \
              nilearn \
