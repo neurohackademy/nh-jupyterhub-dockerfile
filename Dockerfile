@@ -165,3 +165,15 @@ RUN jupyter labextension install jupyter-threejs
 RUN jupyter contrib nbextension install --user
 RUN jupyter nbextension enable exercise2/main
 RUN jupyter nbextensions_configurator enable --user
+
+# Begin stuff for Noah's tutorial:
+RUN mkdir -p /data/freesurfer_subjects \
+ && curl -L -o /data/freesurfer_subjects/fsaverage.tar.gz https://github.com/noahbenson/neuropythy/wiki/files/fsaverage.tar.gz \
+ && curl -L -o /data/freesurfer_subjects/fsaverage_sym.tar.gz https://github.com/noahbenson/neuropythy/wiki/files/fsaverage_sym.tar.gz \
+ && cd /data/freesurfer_subjects && tar zxf fsaverage.tar.gz && tar zxf fsaverage_sym.tar.gz && rm ./fsaverage.tar.gz ./fsaverage_sym.tar.gz
+
+# Get the npythyrc file:
+RUN curl -L -o "$HOME/.npythyrc" https://raw.githubusercontent.com/noahbenson/neuropythy/master/docker/npythyrc
+# Make a directory for the HCP data and neuropythy's cache
+RUN mkdir -p /data/hcp/subjects /data/cache
+# End of stuff for Noah's tutorial
