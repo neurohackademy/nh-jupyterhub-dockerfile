@@ -125,6 +125,9 @@ RUN  pip install  --no-cache-dir \
              https://github.com/ipython-contrib/jupyter_contrib_nbextensions/tarball/master \
              https://github.com/nipype/pydra/tarball/master \
              https://github.com/noahbenson/popeye/tarball/master \
+             https://github.com/rflamary/POT.git/tarball/master \
+             https://github.com/hichamjanati/mtw/tarball/master \
+             mne \
              s3fs \
              pytest \
              cookiecutter \
