@@ -125,6 +125,7 @@ RUN  pip install  --no-cache-dir \
              https://github.com/ipython-contrib/jupyter_contrib_nbextensions/tarball/master \
              https://github.com/nipype/pydra/tarball/master \
              https://github.com/noahbenson/popeye/tarball/master \
+             s3fs \
              neuropythy \
              ipyvolume \
              nilearn \
