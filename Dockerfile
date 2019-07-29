@@ -160,6 +160,8 @@ RUN conda update -n base conda && conda install \
 
 RUN conda install -c conda-forge altair vega_datasets ipyvolume
 
+RUN conda install -c r rpy2 r-ggplot2
+
 RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
         && cd ds000114 \
         && datalad update -r \
