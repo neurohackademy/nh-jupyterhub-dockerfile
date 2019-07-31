@@ -171,6 +171,7 @@ RUN cd /data && datalad install -r ///workshops/nih-2017/ds000114 \
 RUN jupyter labextension install @jupyterlab/hub-extension
 RUN jupyter labextension install ipyvolume
 RUN jupyter labextension install jupyter-threejs
+RUN jupyter labextension install @lckr/jupyterlab_variableinspector
 RUN jupyter contrib nbextension install --user
 RUN jupyter nbextension enable exercise2/main
 RUN jupyter nbextensions_configurator enable --user
