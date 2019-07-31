@@ -177,3 +177,6 @@ RUN curl -L -o "$HOME/.npythyrc" https://raw.githubusercontent.com/noahbenson/ne
 # Make a directory for the HCP data and neuropythy's cache
 RUN mkdir -p /data/hcp/subjects /data/cache
 # End of stuff for Noah's tutorial
+
+# Add jupyter lab variable viewer
+RUN jupyter labextension install @lckr/jupyterlab_variableinspector
