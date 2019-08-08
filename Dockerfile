@@ -150,6 +150,7 @@ RUN  pip install  --no-cache-dir \
              pybids \
              neurosynth\
              pythreejs \
+             voila \
              jupyter_nbextensions_configurator
 
 # This is for https://github.com/rkern/line_profiler/issues/132
@@ -172,9 +173,11 @@ RUN jupyter labextension install @jupyterlab/hub-extension
 RUN jupyter labextension install ipyvolume
 RUN jupyter labextension install jupyter-threejs
 RUN jupyter labextension install @lckr/jupyterlab_variableinspector
+RUN jupyter labextension install @jupyter-voila/jupyterlab-preview
 RUN jupyter contrib nbextension install --user
 RUN jupyter nbextension enable exercise2/main
 RUN jupyter nbextensions_configurator enable --user
+
 
 # Begin stuff for Noah's tutorial:
 RUN mkdir -p /data/freesurfer_subjects \
